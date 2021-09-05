@@ -19,6 +19,7 @@
     },
     "DatabaseGateway.RestApi": {
       "commandName": "Project",
+      "commandLineArgs": "--connection-string \"Server=127.0.0.1;Database=WideWorldImporters;User ID=sa;Password=yourStrong(!)Password\"",
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {
