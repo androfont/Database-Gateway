@@ -1,3 +1,4 @@
+using DatabaseGateway.RestApi.QueryRunner;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -19,6 +20,8 @@ namespace DatabaseGateway.RestApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            string connectionString = Configuration.GetValue<string>("connection-string");
+            services.AddScoped<IQueryRunner>(s => new SqlServerQueryRunner(connectionString));
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
