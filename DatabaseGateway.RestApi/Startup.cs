@@ -1,10 +1,14 @@
+using DatabaseGateway.RestApi.Auth;
 using DatabaseGateway.RestApi.QueryRunner;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Text;
 
 namespace DatabaseGateway.RestApi
 {
@@ -22,7 +26,25 @@ namespace DatabaseGateway.RestApi
         {
             string connectionString = Configuration.GetValue<string>("connection-string");
             services.AddScoped<IQueryRunner>(s => new SqlServerQueryRunner(connectionString));
+            var key = "secret-token-key";
+            services.AddSingleton<IJwtAuth>(s => new JwtAuth(key));
 
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(x =>
+            {
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = true;
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key))
+                };
+            });
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -43,6 +65,8 @@ namespace DatabaseGateway.RestApi
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
