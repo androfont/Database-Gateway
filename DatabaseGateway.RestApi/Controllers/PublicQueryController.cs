@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DatabaseGateway.RestApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/public-query")]
     [ApiController]
     public class PublicQueryController : ControllerBase
     {
@@ -16,28 +16,28 @@ namespace DatabaseGateway.RestApi.Controllers
         }
 
         [HttpPost]
-        [Route("Create")]
+        [Route("create")]
         public IActionResult Create(RequestData requestData)
         {
             return Created(Url.Action(nameof(Read)), _queryRunner.RunQuery(requestData.QueryText));
         }
 
         [HttpPost]
-        [Route("Read")]
+        [Route("read")]
         public IActionResult Read(RequestData requestData)
         {
             return Ok(_queryRunner.RunQuery(requestData.QueryText));
         }
 
         [HttpPut]
-        [Route("Update")]
+        [Route("update")]
         public IActionResult Update(RequestData requestData)
         {
             return Ok(_queryRunner.RunQuery(requestData.QueryText));
         }
 
         [HttpPost]
-        [Route("Delete")]
+        [Route("delete")]
         public IActionResult Delete(RequestData requestData)
         {
             _queryRunner.RunQuery(requestData.QueryText).GetEnumerator().MoveNext();
